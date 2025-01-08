@@ -17,6 +17,17 @@ The application has the following routes:
 - `POST /api/v1/consumers` - Create a new consumer
 - `PUT /api/v1/consumers/{id}` - Update a consumer
 - `DELETE /api/v1/consumers/{id}` - Delete a consumer
+### Merhants
+- `GET /api/v1/merchants` - Retrieve all merchants
+- `GET /api/v1/merchants/{id}` - Retrieve a specific merchant
+- `POST /api/v1/merchants` - Create a new merchant
+- `PUT /api/v1/merchants/{id}` - Update a merchant
+- `DELETE /api/v1/merchants/{id}` - Delete a merchant
+### Consumer Limits
+- `GET /api/v1/consumer-limits/{consumerId}` - Retrieve all consumer limits by consumer id
+- `GET /api/v1/consumer-limits/{consumerId}/{tenure}` - Retrieve a specific consumer limit by consumer id and tenure
+- `POST /api/v1/consumer-limits` - Create or Update consumer limit
+- `DELETE /api/v1/consumer-limits/{id}` - Delete a consumer limit
 
 
 ## Entity-Relationship Diagram (ERD)
