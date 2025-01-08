@@ -160,6 +160,7 @@ func (r *consumerRepo) GetConsumerByID(ctx context.Context, id int64) (data Cons
 		FROM consumers
 		WHERE deleted_at is null
 		AND consumer_id = ?
+		LIMIT 1
 	`
 	row := r.db.QueryRowContext(ctx, query, id)
 

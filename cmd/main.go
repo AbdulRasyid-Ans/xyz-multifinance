@@ -28,9 +28,13 @@ func main() {
 
 	// init repository
 	consumerRepo := repository.NewConsumerRepository(db)
+	merchantRepo := repository.NewMerchantRepository(db)
+	consumerLimitRepo := repository.NewConsumerLimitRepository(db)
 
 	// init usecase
 	consumerUC := usecase.NewConsumerUsecase(consumerRepo, config.Timeout)
+	merchantUC := usecase.NewMerchantUsecase(merchantRepo, config.Timeout)
+	consumerLimitUC := usecase.NewConsumerLimitUsecase(consumerLimitRepo, config.Timeout)
 
 	// init global middleware
 	e.Use(middleware.LoggerMiddleware())
@@ -39,6 +43,8 @@ func main() {
 	// init handler
 	v1 := e.Group("/api/v1")
 	rest.NewConsumerHandler(v1, consumerUC)
+	rest.NewMerchantHandler(v1, merchantUC)
+	rest.NewConsumerLimitHandler(v1, consumerLimitUC)
 
 	e.Logger.Fatal(e.Start(":" + config.Port))
 
