@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS `consumers`(
     `legal_name` VARCHAR(255) NULL,
     `place_of_birth` VARCHAR(255) NOT NULL,
     `dob` DATE NOT NULL,
-    `salary` DOUBLE NULL,
+    `salary` DECIMAL(19, 3) NULL,
     `ktp_image_url` TEXT NULL,
     `selfie_image_url` TEXT NULL,
     `nik` VARCHAR(20) NOT NULL UNIQUE,

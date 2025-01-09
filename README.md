@@ -28,6 +28,14 @@ The application has the following routes:
 - `GET /api/v1/consumer-limits/{consumerId}/{tenure}` - Retrieve a specific consumer limit by consumer id and tenure
 - `POST /api/v1/consumer-limits` - Create or Update consumer limit
 - `DELETE /api/v1/consumer-limits/{id}` - Delete a consumer limit
+### Loans
+- `POST /api/v1/loans` - Create a new loan
+- `GET /api/v1/loans/{id}` - Retrieve a specific loan
+- `GET /api/v1/loans/consumer/{consumerId}` - Retrieve all loans by consumer id
+- `DELETE /api/v1/loans/{id}` - Delete a loan
+### Transactions
+- `POST /api/v1/transactions` - Create a new transaction for loan payment
+- `GET /api/v1/transactions/remaining-payment` - Retrieve remaining loan payment
 
 
 ## Entity-Relationship Diagram (ERD)

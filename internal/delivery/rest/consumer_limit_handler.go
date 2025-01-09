@@ -1,10 +1,12 @@
 package rest
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/AbdulRasyid-Ans/xyz-multifinance/internal/usecase"
+	"github.com/AbdulRasyid-Ans/xyz-multifinance/pkg/logger"
 	"github.com/AbdulRasyid-Ans/xyz-multifinance/pkg/response"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/labstack/echo/v4"
@@ -31,6 +33,7 @@ func NewConsumerLimitHandler(g *echo.Group, consumerLimitUC usecase.ConsumerLimi
 func (h *ConsumerLimitHandler) GetByConsumerID(c echo.Context) error {
 	consumerID, err := strconv.ParseInt(c.Param("consumerId"), 10, 64)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[ConsumerLimitHandler][GetByConsumerID] while parse consumer ID, Err: %+v", err))
 		return response.ErrorResponseWithMessage(c, http.StatusBadRequest, "Invalid consumer ID")
 	}
 
@@ -45,11 +48,13 @@ func (h *ConsumerLimitHandler) GetByConsumerID(c echo.Context) error {
 func (h *ConsumerLimitHandler) GetByConsumerIDAndTenure(c echo.Context) error {
 	consumerID, err := strconv.ParseInt(c.Param("consumerId"), 10, 64)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[ConsumerLimitHandler][GetByConsumerIDAndTenure] while parse consumer ID, Err: %+v", err))
 		return response.ErrorResponseWithMessage(c, http.StatusBadRequest, "Invalid consumer ID")
 	}
 
 	tenure, err := strconv.ParseInt(c.Param("tenure"), 10, 16)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[ConsumerLimitHandler][GetByConsumerIDAndTenure] while parse tenure, Err: %+v", err))
 		return response.ErrorResponseWithMessage(c, http.StatusBadRequest, "Invalid tenure")
 	}
 
@@ -64,6 +69,7 @@ func (h *ConsumerLimitHandler) GetByConsumerIDAndTenure(c echo.Context) error {
 func (h *ConsumerLimitHandler) CreateOrUpdate(c echo.Context) error {
 	req := usecase.ConsumerLimitRequest{}
 	if err := c.Bind(&req); err != nil {
+		logger.Error(fmt.Sprintf("[ConsumerLimitHandler][CreateOrUpdate] while bind req, Err: %+v", err))
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
@@ -72,6 +78,7 @@ func (h *ConsumerLimitHandler) CreateOrUpdate(c echo.Context) error {
 		validation.Field(&req.Tenure, validation.Required),
 		validation.Field(&req.LimitAmount, validation.Required),
 	); err != nil {
+		logger.Warning(fmt.Sprintf("[ConsumerLimitHandler][CreateOrUpdate] while validate req, Err: %+v", err))
 		return response.ErrorResponseWithMessage(c, http.StatusBadRequest, err.Error())
 	}
 
@@ -86,6 +93,7 @@ func (h *ConsumerLimitHandler) CreateOrUpdate(c echo.Context) error {
 func (h *ConsumerLimitHandler) Delete(c echo.Context) error {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[ConsumerLimitHandler][Delete] while parse consumer limit ID, Err: %+v", err))
 		return response.ErrorResponseWithMessage(c, http.StatusBadRequest, "Invalid consumer limit ID")
 	}
 
