@@ -3,6 +3,9 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
+
+	"github.com/AbdulRasyid-Ans/xyz-multifinance/pkg/logger"
 )
 
 type ConsumerLimitRepository interface {
@@ -57,7 +60,7 @@ func (r *consumerLimitRepository) GetLimitByTenureAndConsumerID(ctx context.Cont
 		FROM consumer_limits
 		WHERE deleted_at IS NULL
 		AND consumer_id = ?
-		AND tenure = ?
+		AND CAST(tenure AS CHAR) = ?
 		LIMIT 1
 	`
 
@@ -73,6 +76,7 @@ func (r *consumerLimitRepository) GetLimitByTenureAndConsumerID(ctx context.Cont
 			return result, nil
 		}
 
+		logger.Error(fmt.Sprintf("[consumerLimitRepository][GetLimitByTenureAndConsumerID] while scan query row. Err: %v", err))
 		return result, err
 	}
 
@@ -93,7 +97,7 @@ func (r *consumerLimitRepository) CreateConsumerLimit(ctx context.Context, consu
 			tenure,
 			limit_amount,
 			created_at
-		) VALUES (?, ?, ?, NOW())
+		) VALUES (?, CAST(? AS CHAR), ?, NOW())
 	`
 
 	res, err := r.db.ExecContext(ctx, query,
@@ -102,6 +106,7 @@ func (r *consumerLimitRepository) CreateConsumerLimit(ctx context.Context, consu
 		consumerLimit.LimitAmount,
 	)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[consumerLimitRepository][CreateConsumerLimit] while exec query. Err: %v", err))
 		return 0, err
 	}
 
@@ -112,8 +117,8 @@ func (r *consumerLimitRepository) UpdateConsumerLimit(ctx context.Context, consu
 	query := `
 		UPDATE consumer_limits
 		SET
-			limit_amount = ?
-			modified_at = NOW()
+			limit_amount = ?,
+			updated_at = NOW()
 		WHERE deleted_at IS NULL
 		AND consumer_limit_id = ?
 	`
@@ -123,6 +128,7 @@ func (r *consumerLimitRepository) UpdateConsumerLimit(ctx context.Context, consu
 		consumerLimit.ID,
 	)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[consumerLimitRepository][UpdateConsumerLimit] while exec query. Err: %v", err))
 		return err
 	}
 
@@ -139,6 +145,7 @@ func (r *consumerLimitRepository) DeleteConsumerLimit(ctx context.Context, consu
 
 	_, err = r.db.ExecContext(ctx, query, consumerLimitID)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[consumerLimitRepository][DeleteConsumerLimit] while exec query. Err: %v", err))
 		return err
 	}
 
@@ -159,6 +166,7 @@ func (r *consumerLimitRepository) GetConsumerLimitByConsumerID(ctx context.Conte
 
 	rows, err := r.db.QueryContext(ctx, query, consumerID)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[consumerLimitRepository][GetConsumerLimitByConsumerID] while query. Err: %v", err))
 		return nil, err
 	}
 	defer rows.Close()
@@ -173,6 +181,7 @@ func (r *consumerLimitRepository) GetConsumerLimitByConsumerID(ctx context.Conte
 			&consumerLimitScanner.LimitAmount,
 		)
 		if err != nil {
+			logger.Error(fmt.Sprintf("[consumerLimitRepository][GetConsumerLimitByConsumerID] while scan query row. Err: %v", err))
 			return nil, err
 		}
 
@@ -214,6 +223,7 @@ func (r *consumerLimitRepository) GetConsumerLimitByID(ctx context.Context, cons
 			return result, nil
 		}
 
+		logger.Error(fmt.Sprintf("[consumerLimitRepository][GetConsumerLimitByID] while scan query row. Err: %v", err))
 		return result, err
 	}
 

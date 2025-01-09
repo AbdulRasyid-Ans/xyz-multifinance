@@ -4,7 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
+
+	"github.com/AbdulRasyid-Ans/xyz-multifinance/pkg/logger"
 )
 
 type MerchantRepository interface {
@@ -58,6 +61,7 @@ func (r *merchantRepo) CreateMerchant(ctx context.Context, merchant Merchant) (i
 		merchant.MerchantType,
 	)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[merchantRepo][CreateMerchant] while exec query. Err: %v", err))
 		return 0, err
 	}
 
@@ -89,6 +93,7 @@ func (r *merchantRepo) GetMerchantByID(ctx context.Context, id int64) (data Merc
 			return data, nil
 		}
 
+		logger.Error(fmt.Sprintf("[merchantRepo][GetMerchantByID] while scan query row. Err: %v", err))
 		return data, err
 	}
 
@@ -116,6 +121,7 @@ func (r *merchantRepo) FetchMerchant(ctx context.Context, req FetchMerchantReque
 
 	rows, err := r.db.QueryContext(ctx, query, req.Limit, req.Offset)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[merchantRepo][FetchMerchant] while query. Err: %v", err))
 		return nil, err
 	}
 	defer rows.Close()
@@ -129,6 +135,7 @@ func (r *merchantRepo) FetchMerchant(ctx context.Context, req FetchMerchantReque
 			&merchantScanner.CreatedAt,
 		)
 		if err != nil {
+			logger.Error(fmt.Sprintf("[merchantRepo][FetchMerchant] while scan query row. Err: %v", err))
 			return nil, err
 		}
 
@@ -161,6 +168,7 @@ func (r *merchantRepo) UpdateMerchant(ctx context.Context, merchant Merchant) (e
 		merchant.ID,
 	)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[merchantRepo][UpdateMerchant] while exec query. Err: %v", err))
 		return err
 	}
 
@@ -177,6 +185,7 @@ func (r *merchantRepo) DeleteMerchant(ctx context.Context, id int64) (err error)
 
 	_, err = r.db.ExecContext(ctx, query, id)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[merchantRepo][DeleteMerchant] while exec query. Err: %v", err))
 		return err
 	}
 

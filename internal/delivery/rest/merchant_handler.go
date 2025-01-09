@@ -1,11 +1,12 @@
 package rest
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/AbdulRasyid-Ans/xyz-multifinance/internal/usecase"
+	"github.com/AbdulRasyid-Ans/xyz-multifinance/pkg/logger"
 	"github.com/AbdulRasyid-Ans/xyz-multifinance/pkg/response"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/labstack/echo/v4"
@@ -33,7 +34,7 @@ func NewMerchantHandler(g *echo.Group, merchantUC usecase.MerchantUsecase) {
 func (h *MerchantHandler) Create(c echo.Context) error {
 	req := usecase.MerchantRequest{}
 	if err := c.Bind(&req); err != nil {
-		log.Printf("Error: %+v", err)
+		logger.Error(fmt.Sprintf("[MerchantHandler][Create] while bind request, Err: %+v", err))
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
@@ -41,6 +42,7 @@ func (h *MerchantHandler) Create(c echo.Context) error {
 		validation.Field(&req.MerchantName, validation.Required),
 		validation.Field(&req.MerchantType, validation.Required),
 	); err != nil {
+		logger.Warning(fmt.Sprintf("[MerchantHandler][Create] while validate request, Err: %+v", err))
 		return response.ErrorResponseWithMessage(c, http.StatusBadRequest, err.Error())
 	}
 
@@ -55,11 +57,13 @@ func (h *MerchantHandler) Create(c echo.Context) error {
 func (h *MerchantHandler) Update(c echo.Context) error {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[MerchantHandler][Update] while parse merchant ID, Err: %+v", err))
 		return response.ErrorResponseWithMessage(c, http.StatusBadRequest, "Invalid merchant ID")
 	}
 
 	req := usecase.MerchantRequest{}
 	if err := c.Bind(&req); err != nil {
+		logger.Error(fmt.Sprintf("[MerchantHandler][Update] while bind request, Err: %+v", err))
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
@@ -67,6 +71,7 @@ func (h *MerchantHandler) Update(c echo.Context) error {
 		validation.Field(&req.MerchantName, validation.Required),
 		validation.Field(&req.MerchantType, validation.Required),
 	); err != nil {
+		logger.Warning(fmt.Sprintf("[MerchantHandler][Update] while validate request, Err: %+v", err))
 		return response.ErrorResponseWithMessage(c, http.StatusBadRequest, err.Error())
 	}
 
@@ -81,6 +86,7 @@ func (h *MerchantHandler) Update(c echo.Context) error {
 func (h *MerchantHandler) Delete(c echo.Context) error {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[MerchantHandler][Delete] while parse merchant ID, Err: %+v", err))
 		return response.ErrorResponseWithMessage(c, http.StatusBadRequest, "Invalid merchant ID")
 	}
 
@@ -95,6 +101,7 @@ func (h *MerchantHandler) Delete(c echo.Context) error {
 func (h *MerchantHandler) Fetch(c echo.Context) error {
 	req := usecase.FetchMerchantRequest{}
 	if err := c.Bind(&req); err != nil {
+		logger.Error(fmt.Sprintf("[MerchantHandler][Fetch] while bind request, Err: %+v", err))
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
@@ -109,6 +116,7 @@ func (h *MerchantHandler) Fetch(c echo.Context) error {
 func (h *MerchantHandler) GetByID(c echo.Context) error {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[MerchantHandler][GetByID] while parse merchant ID, Err: %+v", err))
 		return response.ErrorResponseWithMessage(c, http.StatusBadRequest, "Invalid merchant ID")
 	}
 

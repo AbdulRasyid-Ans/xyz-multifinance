@@ -4,7 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
+
+	"github.com/AbdulRasyid-Ans/xyz-multifinance/pkg/logger"
 )
 
 type ConsumerRepository interface {
@@ -82,11 +85,13 @@ func (r *consumerRepo) CreateConsumer(ctx context.Context, consumer Consumer) (i
 		consumer.SelfieURL,
 	)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[consumerRepo][CreateConsumer] while exec query. Err: %v", err))
 		return id, err
 	}
 
 	id, err = result.LastInsertId()
 	if err != nil {
+		logger.Error(fmt.Sprintf("[consumerRepo][CreateConsumer] while get last insert id. Err: %v", err))
 		return id, err
 	}
 
@@ -105,7 +110,7 @@ func (r *consumerRepo) UpdateConsumer(ctx context.Context, consumer Consumer) (e
 			nik = ?,
 			ktp_image_url = ?,
 			selfie_image_url = ?,
-			modified_at = NOW()
+			updated_at = NOW()
 		WHERE deleted_at is null
 		AND consumer_id = ?
 	`
@@ -122,6 +127,7 @@ func (r *consumerRepo) UpdateConsumer(ctx context.Context, consumer Consumer) (e
 		consumer.ID,
 	)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[consumerRepo][UpdateConsumer] while exec query. Err: %v", err))
 		return err
 	}
 
@@ -138,6 +144,7 @@ func (r *consumerRepo) DeleteConsumer(ctx context.Context, id int64) (err error)
 
 	_, err = r.db.ExecContext(ctx, query, id)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[consumerRepo][DeleteConsumer] while exec query. Err: %v", err))
 		return err
 	}
 
@@ -180,6 +187,8 @@ func (r *consumerRepo) GetConsumerByID(ctx context.Context, id int64) (data Cons
 		if errors.Is(err, sql.ErrNoRows) {
 			return data, nil
 		}
+
+		logger.Error(fmt.Sprintf("[consumerRepo][GetConsumerByID] while scan query row. Err: %v", err))
 		return data, err
 	}
 
@@ -218,6 +227,7 @@ func (r *consumerRepo) FetchConsumer(ctx context.Context, req FetchConsumerReque
 	`
 	rows, err := r.db.QueryContext(ctx, query, req.Limit, req.Offset)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[consumerRepo][FetchConsumer] while query. Err: %v", err))
 		return nil, err
 	}
 	defer rows.Close()
@@ -236,6 +246,7 @@ func (r *consumerRepo) FetchConsumer(ctx context.Context, req FetchConsumerReque
 			&consumerScanner.SelfieURL,
 			&consumerScanner.CreatedAt,
 		); err != nil {
+			logger.Error(fmt.Sprintf("[consumerRepo][FetchConsumer] while scan query row. Err: %v", err))
 			return nil, err
 		}
 

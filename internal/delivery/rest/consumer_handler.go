@@ -1,10 +1,12 @@
 package rest
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/AbdulRasyid-Ans/xyz-multifinance/internal/usecase"
+	"github.com/AbdulRasyid-Ans/xyz-multifinance/pkg/logger"
 	"github.com/AbdulRasyid-Ans/xyz-multifinance/pkg/response"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/labstack/echo/v4"
@@ -32,6 +34,7 @@ func NewConsumerHandler(g *echo.Group, consumerUC usecase.ConsumerUsecase) {
 func (h *ConsumerHandler) Create(c echo.Context) error {
 	req := usecase.ConsumerRequest{}
 	if err := c.Bind(&req); err != nil {
+		logger.Error(fmt.Sprintf("[ConsumerHandler][Create] while bind request, Err: %+v", err))
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
@@ -41,6 +44,7 @@ func (h *ConsumerHandler) Create(c echo.Context) error {
 		validation.Field(&req.DOB, validation.Required),
 		validation.Field(&req.NIK, validation.Required),
 	); err != nil {
+		logger.Warning(fmt.Sprintf("[ConsumerHandler][Create] while validate request, Err: %+v", err))
 		return response.ErrorResponseWithMessage(c, http.StatusBadRequest, err.Error())
 	}
 
@@ -55,11 +59,13 @@ func (h *ConsumerHandler) Create(c echo.Context) error {
 func (h *ConsumerHandler) Update(c echo.Context) error {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[ConsumerHandler][Update] while parse consumer ID, Err: %+v", err))
 		return response.ErrorResponseWithMessage(c, http.StatusBadRequest, "Invalid consumer ID")
 	}
 
 	req := usecase.ConsumerRequest{}
 	if err := c.Bind(&req); err != nil {
+		logger.Error(fmt.Sprintf("[ConsumerHandler][Update] while bind request, Err: %+v", err))
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
@@ -69,6 +75,7 @@ func (h *ConsumerHandler) Update(c echo.Context) error {
 		validation.Field(&req.DOB, validation.Required),
 		validation.Field(&req.NIK, validation.Required),
 	); err != nil {
+		logger.Warning(fmt.Sprintf("[ConsumerHandler][Update] while validate request, Err: %+v", err))
 		return response.ErrorResponseWithMessage(c, http.StatusBadRequest, err.Error())
 	}
 
@@ -83,6 +90,7 @@ func (h *ConsumerHandler) Update(c echo.Context) error {
 func (h *ConsumerHandler) Delete(c echo.Context) error {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[ConsumerHandler][Delete] while parse consumer ID, Err: %+v", err))
 		return response.ErrorResponseWithMessage(c, http.StatusBadRequest, "Invalid consumer ID")
 	}
 
@@ -97,6 +105,7 @@ func (h *ConsumerHandler) Delete(c echo.Context) error {
 func (h *ConsumerHandler) Fetch(c echo.Context) error {
 	req := usecase.FetchConsumerRequest{}
 	if err := c.Bind(&req); err != nil {
+		logger.Error(fmt.Sprintf("[ConsumerHandler][Fetch] while bind request, Err: %+v", err))
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
@@ -111,6 +120,7 @@ func (h *ConsumerHandler) Fetch(c echo.Context) error {
 func (h *ConsumerHandler) GetByID(c echo.Context) error {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
+		logger.Error(fmt.Sprintf("[ConsumerHandler][GetByID] while parse consumer ID, Err: %+v", err))
 		return response.ErrorResponseWithMessage(c, http.StatusBadRequest, "Invalid consumer ID")
 	}
 
