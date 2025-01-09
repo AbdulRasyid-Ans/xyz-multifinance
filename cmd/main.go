@@ -30,11 +30,27 @@ func main() {
 	consumerRepo := repository.NewConsumerRepository(db)
 	merchantRepo := repository.NewMerchantRepository(db)
 	consumerLimitRepo := repository.NewConsumerLimitRepository(db)
+	loanRepo := repository.NewLoanRepository(db)
+	transactionRepo := repository.NewTransactionRepository(db)
 
 	// init usecase
 	consumerUC := usecase.NewConsumerUsecase(consumerRepo, config.Timeout)
 	merchantUC := usecase.NewMerchantUsecase(merchantRepo, config.Timeout)
 	consumerLimitUC := usecase.NewConsumerLimitUsecase(consumerLimitRepo, config.Timeout)
+	loanUC := usecase.NewLoanUsecase(
+		loanRepo,
+		consumerLimitRepo,
+		consumerRepo,
+		merchantRepo,
+		config.Timeout,
+	)
+	transactionUC := usecase.NewTransactionUsecase(
+		transactionRepo,
+		loanRepo,
+		consumerLimitRepo,
+		consumerRepo,
+		config.Timeout,
+	)
 
 	// init global middleware
 	e.Use(middleware.LoggerMiddleware())
@@ -45,6 +61,8 @@ func main() {
 	rest.NewConsumerHandler(v1, consumerUC)
 	rest.NewMerchantHandler(v1, merchantUC)
 	rest.NewConsumerLimitHandler(v1, consumerLimitUC)
+	rest.NewLoanHandler(v1, loanUC)
+	rest.NewTransactionHandler(v1, transactionUC)
 
 	e.Logger.Fatal(e.Start(":" + config.Port))
 
